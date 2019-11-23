@@ -139,6 +139,8 @@ __log2_data
 __log2f_data
 __log_data
 __logf_data
+__main_argc_argv
+__main_void
 __math_divzero
 __math_divzerof
 __math_invalid
