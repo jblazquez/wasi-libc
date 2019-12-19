@@ -38,6 +38,8 @@ _Static_assert(_Alignof(int32_t) == 4, "non-wasi data layout");
 _Static_assert(_Alignof(uint32_t) == 4, "non-wasi data layout");
 _Static_assert(_Alignof(int64_t) == 8, "non-wasi data layout");
 _Static_assert(_Alignof(uint64_t) == 8, "non-wasi data layout");
+// This header is only valid for wasm32: witx currently calcualtes memory
+// layout for the wasm32 abi only.
 _Static_assert(_Alignof(void*) == 4, "non-wasi data layout");
 
 #ifdef __cplusplus
@@ -128,6 +130,8 @@ fn print_alias(ret: &mut String, name: &Id, dest: &TypeRef) {
                 ident_name(name),
                 dest.mem_size_align().align
             ));
+
+            ret.push_str("\n");
         }
     }
 }
@@ -168,6 +172,8 @@ fn print_enum(ret: &mut String, name: &Id, e: &EnumDatatype) {
         ident_name(name),
         e.repr.mem_align()
     ));
+
+    ret.push_str("\n");
 }
 
 fn print_flags(ret: &mut String, name: &Id, f: &FlagsDatatype) {
@@ -206,6 +212,8 @@ fn print_flags(ret: &mut String, name: &Id, f: &FlagsDatatype) {
         ident_name(name),
         f.repr.mem_align(),
     ));
+
+    ret.push_str("\n");
 }
 
 fn print_struct(ret: &mut String, name: &Id, s: &StructDatatype) {
@@ -252,6 +260,8 @@ fn print_struct(ret: &mut String, name: &Id, s: &StructDatatype) {
             layout.offset
         ));
     }
+
+    ret.push_str("\n");
 }
 
 fn print_union(ret: &mut String, name: &Id, u: &UnionDatatype) {
@@ -286,10 +296,25 @@ fn print_union(ret: &mut String, name: &Id, u: &UnionDatatype) {
         ident_name(name),
         u.mem_align()
     ));
+
+    ret.push_str("\n");
 }
 
-fn print_handle(ret: &mut String, name: &Id, _h: &HandleDatatype) {
+fn print_handle(ret: &mut String, name: &Id, h: &HandleDatatype) {
     ret.push_str(&format!("typedef int __wasi_{}_t;", ident_name(name)));
+
+    ret.push_str(&format!(
+        "_Static_assert(sizeof(__wasi_{}_t) == {}, \"witx calculated size\");\n",
+        ident_name(name),
+        h.mem_size()
+    ));
+    ret.push_str(&format!(
+        "_Static_assert(_Alignof(__wasi_{}_t) == {}, \"witx calculated align\");\n",
+        ident_name(name),
+        h.mem_align()
+    ));
+
+    ret.push_str("\n");
 }
 
 fn print_module(ret: &mut String, m: &Module) {
