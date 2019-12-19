@@ -1,7 +1,7 @@
 mod c_header;
 
 use anyhow::{anyhow, Result};
-use c_header::to_c_header;
+pub use c_header::to_c_header;
 use std::fs::read_dir;
 use std::io;
 use witx::load;
