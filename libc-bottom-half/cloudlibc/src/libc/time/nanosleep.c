@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include <_/cdefs.h>
 #include <errno.h>
 #include <threads.h>
 #include <time.h>
